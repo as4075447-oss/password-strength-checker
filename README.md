@@ -1,60 +1,68 @@
-
 # Password Strength Checker
 
-A Python project that evaluates password characteristics using
-security policy checks and an estimated entropy calculation.
+A Python command-line application that evaluates password characteristics using security policy checks, estimated entropy, and a compromised-password database lookup.
 
 ## Features
 
-- Checks minimum password length
+- Validates minimum password length (12 characters)
 - Checks uppercase and lowercase letters
 - Checks for digits and special characters
 - Estimates password entropy in bits
-- Classifies password strength
+- Classifies password strength as Weak, Moderate, Strong, or Exceptional
 - Provides actionable improvement suggestions
-- Attempts to check passwords against the
-  Have I Been Pwned Pwned Passwords database
+- Checks passwords against the Have I Been Pwned Pwned Passwords database
+- Uses a privacy-conscious range API lookup rather than sending the complete password to the API
+- Handles unavailable network lookups without treating them as confirmed safe results
 
 ## Technologies
 
 - Python 3
-- hashlib
-- math
-- string
-- urllib
+- `hashlib`
+- `math`
+- `string`
+- `urllib`
 
 ## How It Works
 
-The program evaluates the password against five basic policy
-criteria and estimates entropy based on the character types
-present.
+The program evaluates a password against five basic policy criteria and estimates entropy based on the character types present.
 
-It also attempts a privacy-conscious compromised-password
-lookup. The complete password is not sent to the API.
+For compromised-password detection, it calculates a SHA-1 hash locally and uses the first five hexadecimal characters to query the Pwned Passwords range API. It compares the remaining hash suffix locally. The complete password is not sent to the API.
+
+The program then classifies password strength and provides recommendations based on the results.
+
+## Testing
+
+The following tests were performed using fictional test inputs:
+
+- **Mixed-character test:** All five policy checks passed, and the program returned an Exceptional rating.
+- **Short-password test (`abc`):** The program identified failed policy checks, returned a Weak rating, and detected a match in the compromised-password database.
+- **Live API test:** The database lookup succeeded on the local computer.
+
+These tests demonstrate the expected behaviour for the tested inputs; they do not constitute a formal security audit.
 
 ## Limitations
 
 - Entropy is an estimate and assumes randomly selected characters.
-- A database non-match does not guarantee a password is secure.
+- A database non-match does not guarantee that a password is secure.
 - The live database lookup requires internet access.
-- Some browser-based Python environments block outgoing requests.
-- The strength categories are educational classifications,
-  not a formal security certification.
+- Network restrictions may prevent the database lookup from completing.
+- Strength categories are educational classifications, not a formal security certification.
 
-## Testing
+## How to Run
 
-Test with fictional passwords that represent different cases:
+1. Install Python 3.
+2. Download or clone this repository.
+3. Open a terminal in the project folder.
+4. Run:
 
-- A short password
-- A password without digits
-- A password containing multiple character types
-- An empty input
-- A database lookup when network access is available
+   `python password_checker.py`
 
-Never use real account passwords for testing.
+5. Enter a fictional test password when prompted.
+
+## Security Note
+
+Never enter real account passwords into a demonstration program or use real passwords for testing. Use a unique password or passphrase for each account.
 
 ## Project Status
 
-The basic policy checks and entropy calculation have been
-tested in a browser-based Python editor. The live compromised-
-password lookup still requires successful network testing.
+Core functionality has been implemented and tested locally, including policy validation, entropy estimation, strength classification, recommendations, and the live compromised-password lookup.
